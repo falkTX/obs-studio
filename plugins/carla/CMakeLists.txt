@@ -50,7 +50,7 @@ if(NOT (OS_MACOS OR OS_WINDOWS))
   set_property(
     TARGET carla-bridge
     APPEND
-    PROPERTY BUILD_RPATH "$<TARGET_FILE_DIR:carla::utils>")
+    PROPERTY BUILD_RPATH "$<TARGET_FILE_DIR:carla::utils>" INSTALL_RPATH "$<TARGET_FILE_DIR:carla::utils>")
 endif()
 
 if(OBS_CMAKE_VERSION VERSION_GREATER_EQUAL 3.0.0)
