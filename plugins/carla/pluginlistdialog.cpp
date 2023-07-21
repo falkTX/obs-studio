@@ -607,7 +607,8 @@ struct PluginListDialog::PrivateData {
 // ----------------------------------------------------------------------------
 
 PluginListDialog::PluginListDialog(QWidget *const parent)
-	: QDialog(parent), p(new PrivateData)
+	: QDialog(parent),
+	  p(new PrivateData)
 {
 	ui.setupUi(this);
 
