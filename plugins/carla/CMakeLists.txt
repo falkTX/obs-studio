@@ -12,28 +12,14 @@ if(NOT ENABLE_CARLA)
 endif()
 
 # Find carla utils
-if(APPLE)
-  # even though cmake finds the framework, it refuses to work with it. let's force it
-  find_library(CARLAUTILS_FRAMEWORK NAMES carla-utils)
-  get_filename_component(CARLAUTILS_LIBRARY_DIR "${CARLAUTILS_FRAMEWORK}/.." ABSOLUTE)
-  message("Found carla-utils: ${CARLAUTILS_LIBRARY_DIR} ${CARLAUTILS_FRAMEWORK}")
-  add_library(carla::utils INTERFACE IMPORTED)
-  set_target_properties(
-    carla::utils
-    PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CARLAUTILS_FRAMEWORK}/Headers"
-               INTERFACE_LINK_OPTIONS "-F${CARLAUTILS_LIBRARY_DIR}"
-               INTERFACE_LINK_LIBRARIES $<LINK_LIBRARY:FRAMEWORK,carla-utils.framework>)
-  set_property(GLOBAL APPEND PROPERTY _OBS_FRAMEWORKS "${CARLAUTILS_FRAMEWORK}")
-else()
-  find_package(CarlaUtils)
-  if(NOT CARLAUTILS_FOUND)
-    if(OBS_CMAKE_VERSION VERSION_GREATER_EQUAL 3.0.0)
-      target_disable(carla)
-    else()
-      message(STATUS "OBS:  DISABLED   carla (carla-utils library not found)")
-    endif()
-    return()
+find_package(CarlaUtils)
+if(NOT CARLAUTILS_FOUND)
+  if(OBS_CMAKE_VERSION VERSION_GREATER_EQUAL 3.0.0)
+    target_disable(carla)
+  else()
+    message(STATUS "OBS:  DISABLED   carla (carla-utils library not found)")
   endif()
+  return()
 endif()
 
 # Find Qt
