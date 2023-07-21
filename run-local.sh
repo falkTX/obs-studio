@@ -2,7 +2,7 @@
 
 cd $(dirname "${0}")
 
-OBS_DIR="$(pwd)/build/rundir/RelWithDebInfo"
+OBS_DIR="$(pwd)/build-cmake/rundir/RelWithDebInfo"
 
 export LD_LIBRARY_PATH="${OBS_DIR}/lib"
 export LIBOBS_DATA_PATH="${OBS_DIR}/share/obs/libobs/"
