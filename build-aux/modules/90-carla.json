@@ -4,6 +4,7 @@
     "builddir": true,
     "subdir": "cmake",
     "config-opts": [
+        "-DCARLA_SKIP_LIBDIR_SUFFIX:BOOL=ON",
         "-DCARLA_USE_JACK:BOOL=OFF",
         "-DCARLA_USE_OSC:BOOL=OFF"
     ],
@@ -11,7 +12,7 @@
         {
             "type": "git",
             "url": "https://github.com/falkTX/Carla.git",
-            "commit": "a358344017b4d612a6e8f3f9b63503c33b949849"
+            "commit": "8d4bf13cd411307649f3e4327d855d98f06fb76f"
         }
     ]
 }
