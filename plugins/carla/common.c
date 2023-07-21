@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-#ifndef _WIN32
+#if !(defined(__APPLE__) || defined(_WIN32))
 // needed for libdl stuff and strcasestr
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -12,6 +12,10 @@
 #include <dlfcn.h>
 #include <limits.h>
 #include <stdlib.h>
+#endif
+
+#if defined(__linux__) || defined(__FreeBSD__)
+#include <unistd.h>
 #endif
 
 #include <CarlaUtils.h>
@@ -23,69 +27,71 @@
 
 // ----------------------------------------------------------------------------
 
-static char *module_path = NULL;
+static char *carla_bin_path = NULL;
 
 const char *get_carla_bin_path(void)
 {
-	if (module_path != NULL)
-		return module_path;
+	if (carla_bin_path != NULL)
+		return carla_bin_path;
 
-	char *mpath;
+	char *binpath;
+	const char *utilspath;
 
-	// check path of linked carla-utils library first
-	const char *const utilspath = carla_get_library_folder();
-	const size_t utilslen = strlen(utilspath);
-
-	mpath = bmalloc(utilslen + 28);
-	memcpy(mpath, utilspath, utilslen);
-	memcpy(mpath + utilslen, CARLA_OS_SEP_STR "carla-discovery-native", 24);
-#ifdef _WIN32
-	memcpy(mpath + utilslen + 23, ".exe", 5);
+#if defined(__linux__) || defined(__FreeBSD__)
+	if (access("/.flatpak-info", F_OK) == 0) {
+		// use known path under flatpak
+		utilspath = "/app/bin";
+	} else
 #endif
-
-	if (os_file_exists(mpath)) {
-		mpath[utilslen] = '\0';
-		module_path = mpath;
-		return module_path;
+	{
+		// use path of linked carla-utils library
+		utilspath = carla_get_library_folder();
 	}
 
-	free(mpath);
+	const size_t utilslen = strlen(utilspath);
 
-#ifndef _WIN32
+	binpath = bmalloc(utilslen + 28);
+	memcpy(binpath, utilspath, utilslen);
+	memcpy(binpath + utilslen, CARLA_OS_SEP_STR "carla-discovery-native",
+	       24);
+#ifdef _WIN32
+	memcpy(binpath + utilslen + 23, ".exe", 5);
+#endif
+
+	if (os_file_exists(binpath)) {
+		binpath[utilslen] = '\0';
+		carla_bin_path = binpath;
+		return carla_bin_path;
+	}
+
+	free(binpath);
+
+#if !(defined(__APPLE__) || defined(_WIN32))
 	// check path of this OBS plugin as fallback
 	Dl_info info;
 	dladdr(get_carla_bin_path, &info);
-	mpath = realpath(info.dli_fname, NULL);
+	binpath = realpath(info.dli_fname, NULL);
 
-	if (mpath == NULL)
+	if (binpath == NULL)
 		return NULL;
 
 	// truncate to last separator
-	char *lastsep = strrchr(mpath, '/');
+	char *lastsep = strrchr(binpath, '/');
 	if (lastsep == NULL)
 		goto free;
 	*lastsep = '\0';
 
-#ifdef __APPLE__
-	// running as macOS app bundle, use its binary dir
-	char *appbundlesep = strcasestr(mpath, "/PlugIns/" CARLA_MODULE_ID
-					       ".plugin/Contents/MacOS");
-	if (appbundlesep == NULL)
-		goto free;
-	strcpy(appbundlesep, "/MacOS");
-#endif
-
-	if (os_file_exists(mpath)) {
-		module_path = bstrdup(mpath);
-		free(mpath);
-		return module_path;
+	if (os_file_exists(binpath)) {
+		carla_bin_path = bstrdup(binpath);
+		free(binpath);
+		return carla_bin_path;
 	}
 
 free:
-	free(mpath);
-#endif // !_WIN32
+	free(binpath);
+#endif // !(__APPLE__ || _WIN32)
 
-	return module_path;
+	return carla_bin_path;
 }
 
 void param_index_to_name(uint32_t index, char name[PARAM_NAME_SIZE])
@@ -149,8 +155,8 @@ void handle_update_request(obs_source_t *source, uint64_t *update_req)
 
 void obs_module_unload(void)
 {
-	bfree(module_path);
-	module_path = NULL;
+	bfree(carla_bin_path);
+	carla_bin_path = NULL;
 }
 
 // ----------------------------------------------------------------------------
