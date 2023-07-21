@@ -58,7 +58,7 @@ struct PluginPaths {
 		// get common env vars
 		const QString HOME = QDir::toNativeSeparators(QDir::homePath());
 
-#if defined(CARLA_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 		const char *const envAPPDATA = std::getenv("APPDATA");
 		const char *const envLOCALAPPDATA =
 			getEnvWithFallback("LOCALAPPDATA", envAPPDATA);
@@ -86,7 +86,7 @@ struct PluginPaths {
 		const QUtf8String LOCALAPPDATA(envLOCALAPPDATA);
 		const QUtf8String PROGRAMFILES(envPROGRAMFILES);
 		const QUtf8String COMMONPROGRAMFILES(envCOMMONPROGRAMFILES);
-#elif !defined(CARLA_OS_MAC)
+#elif !defined(Q_OS_DARWIN)
 		const QUtf8String CONFIG_HOME(getEnvWithFallback(
 			"XDG_CONFIG_HOME", (HOME + "/.config").toUtf8()));
 #endif
@@ -96,10 +96,10 @@ struct PluginPaths {
 			ladspa = envLADSPA;
 		} else {
 			// no official spec, use common paths
-#if defined(CARLA_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			ladspa = APPDATA + "\\LADSPA";
 			ladspa += ";" + PROGRAMFILES + "\\LADSPA";
-#elif defined(CARLA_OS_MAC)
+#elif defined(Q_OS_DARWIN)
 			ladspa = HOME + "/Library/Audio/Plug-Ins/LADSPA";
 			ladspa += ":/Library/Audio/Plug-Ins/LADSPA";
 #else
@@ -113,10 +113,10 @@ struct PluginPaths {
 			lv2 = envLV2;
 		} else {
 			// https://lv2plug.in/pages/filesystem-hierarchy-standard.html
-#if defined(CARLA_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			lv2 = APPDATA + "\\LV2";
 			lv2 += ";" + COMMONPROGRAMFILES + "\\LV2";
-#elif defined(CARLA_OS_MAC)
+#elif defined(Q_OS_DARWIN)
 			lv2 = HOME + "/Library/Audio/Plug-Ins/LV2";
 			lv2 += ":/Library/Audio/Plug-Ins/LV2";
 #else
@@ -129,13 +129,13 @@ struct PluginPaths {
 		if (const char *const envVST2 = std::getenv("VST_PATH")) {
 			vst2 = envVST2;
 		} else {
-#if defined(CARLA_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			// https://helpcenter.steinberg.de/hc/en-us/articles/115000177084
 			vst2 = PROGRAMFILES + "\\VSTPlugins";
 			vst2 += ";" + PROGRAMFILES + "\\Steinberg\\VSTPlugins";
 			vst2 += ";" + COMMONPROGRAMFILES + "\\VST2";
 			vst2 += ";" + COMMONPROGRAMFILES + "\\Steinberg\\VST2";
-#elif defined(CARLA_OS_MAC)
+#elif defined(Q_OS_DARWIN)
 			// https://helpcenter.steinberg.de/hc/en-us/articles/115000171310
 			vst2 = HOME + "/Library/Audio/Plug-Ins/VST";
 			vst2 += ":/Library/Audio/Plug-Ins/VST";
@@ -154,10 +154,10 @@ struct PluginPaths {
 			vst3 = envVST3;
 		} else {
 			// https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical+Documentation/Locations+Format/Plugin+Locations.html
-#if defined(CARLA_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			vst3 = LOCALAPPDATA + "\\Programs\\Common\\VST3";
 			vst3 += ";" + COMMONPROGRAMFILES + "\\VST3";
-#elif defined(CARLA_OS_MAC)
+#elif defined(Q_OS_DARWIN)
 			vst3 = HOME + "/Library/Audio/Plug-Ins/VST3";
 			vst3 += ":/Library/Audio/Plug-Ins/VST3";
 #else
@@ -171,10 +171,10 @@ struct PluginPaths {
 			clap = envCLAP;
 		} else {
 			// https://github.com/free-audio/clap/blob/main/include/clap/entry.h
-#if defined(CARLA_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			clap = LOCALAPPDATA + "\\Programs\\Common\\CLAP";
 			clap += ";" + COMMONPROGRAMFILES + "\\CLAP";
-#elif defined(CARLA_OS_MAC)
+#elif defined(Q_OS_DARWIN)
 			clap = HOME + "/Library/Audio/Plug-Ins/CLAP";
 			clap += ":/Library/Audio/Plug-Ins/CLAP";
 #else
@@ -188,9 +188,9 @@ struct PluginPaths {
 			jsfx = envJSFX;
 		} else {
 			// REAPER user data directory
-#if defined(CARLA_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			jsfx = APPDATA + "\\REAPER\\Effects";
-#elif defined(CARLA_OS_MAC)
+#elif defined(Q_OS_DARWIN)
 			jsfx = HOME +
 			       "/Library/Application Support/REAPER/Effects";
 #else
@@ -542,9 +542,10 @@ struct PluginListDialog::PrivateData {
 		Discovery()
 		{
 			tool = get_carla_bin_path();
-			tool += CARLA_OS_SEP_STR "carla-discovery-native";
-#ifdef CARLA_OS_WIN
-			tool += ".exe";
+#ifdef Q_OS_WINDOWS
+			tool += "\\carla-discovery-native.exe";
+#else
+			tool += "/carla-discovery-native";
 #endif
 		}
 
@@ -640,7 +641,7 @@ PluginListDialog::PluginListDialog(QWidget *const parent)
 	addAction(ui.act_focus_search);
 
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-#ifdef CARLA_OS_MAC
+#ifdef Q_OS_DARWIN
 	setWindowModality(Qt::WindowModal);
 #endif
 

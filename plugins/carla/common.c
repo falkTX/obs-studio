@@ -52,10 +52,10 @@ const char *get_carla_bin_path(void)
 
 	binpath = bmalloc(utilslen + 28);
 	memcpy(binpath, utilspath, utilslen);
-	memcpy(binpath + utilslen, CARLA_OS_SEP_STR "carla-discovery-native",
-	       24);
 #ifdef _WIN32
-	memcpy(binpath + utilslen + 23, ".exe", 5);
+	memcpy(binpath + utilslen, "\\carla-discovery-native.exe", 28);
+#else
+	memcpy(binpath + utilslen, "/carla-discovery-native", 24);
 #endif
 
 	if (os_file_exists(binpath)) {

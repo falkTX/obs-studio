@@ -8,7 +8,7 @@
 #include <CarlaBase64Utils.hpp>
 #include <CarlaBinaryUtils.hpp>
 
-#ifdef CARLA_OS_MAC
+#ifdef __APPLE__
 #include <CarlaMacUtils.hpp>
 #endif
 
@@ -25,7 +25,7 @@
 #include "common.h"
 #include "qtutils.h"
 
-#if defined(CARLA_OS_MAC) && defined(__aarch64__)
+#if defined(__APPLE__) && defined(__aarch64__)
 // ----------------------------------------------------------------------------
 // check the header of a plugin binary to see if it matches mach 64bit + intel
 
@@ -344,7 +344,7 @@ bool carla_bridge::start(const BinaryType btype, const PluginType ptype,
 
 	QStringList arguments;
 
-#if defined(CARLA_OS_MAC) && defined(__aarch64__)
+#if defined(__APPLE__) && defined(__aarch64__)
 	// see if this binary needs special help (x86_64 plugins under arm64 systems)
 	switch (ptype) {
 	case PLUGIN_VST2:
