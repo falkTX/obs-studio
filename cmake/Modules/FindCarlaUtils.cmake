@@ -2,81 +2,39 @@
 #
 # CARLAUTILS_FOUND CARLAUTILS_INCLUDE_DIRS CARLAUTILS_LIBRARIES
 
-# QUIET
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
-  pkg_check_modules(_CARLAUTILS carla-utils)
-endif()
-
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(_lib_suffix 64)
-else()
-  set(_lib_suffix 32)
+  pkg_check_modules(PC_CARLAUTILS QUIET carla-utils)
 endif()
 
 find_path(
   CARLAUTILS_INCLUDE_DIR
   NAMES utils/CarlaBridgeUtils.hpp
-  HINTS ENV CARLAUTILS_PATH ${CARLAUTILS_PATH} ${CMAKE_SOURCE_DIR}/${CARLAUTILS_PATH} ${_CARLAUTILS_INCLUDE_DIRS}
-  PATHS /usr/include/carla /usr/local/include/carla /opt/local/include/carla /sw/include/carla
-  PATH_SUFFIXES carla)
+  HINTS ${PC_CARLAUTILS_INCLUDE_DIRS}
+  PATHS /usr/include/carla /usr/local/include/carla
+  PATH_SUFFIXES carla
+  DOC "carla include directory")
 
 find_library(
   CARLAUTILS_LIBRARY
   NAMES carla_utils libcarla_utils
-  HINTS ENV CARLAUTILS_PATH ${CARLAUTILS_PATH} ${CMAKE_SOURCE_DIR}/${CARLAUTILS_PATH} ${_CARLAUTILS_LIBRARY_DIRS}
-  PATHS /usr/lib/carla /usr/local/lib/carla /opt/local/lib/carla /sw/lib/carla
-  PATH_SUFFIXES
-    lib${_lib_suffix}
-    lib
-    libs${_lib_suffix}
-    libs
-    bin${_lib_suffix}
-    bin
-    ../lib${_lib_suffix}
-    ../lib
-    ../libs${_lib_suffix}
-    ../libs
-    ../bin${_lib_suffix}
-    ../bin)
+  HINTS ${PC_CARLAUTILS_LIBRARY_DIRS}
+  PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
+  PATH_SUFFIXES carla)
 
 find_program(
   CARLAUTILS_BRIDGE_NATIVE
   NAMES carla-bridge-native
-  HINTS ENV CARLAUTILS_PATH ${CARLAUTILS_PATH} ${CMAKE_SOURCE_DIR}/${CARLAUTILS_PATH} ${_CARLAUTILS_LIBRARY_DIRS}
-  PATHS /usr/lib/carla /usr/local/lib/carla /opt/local/lib/carla /sw/lib/carla
-  PATH_SUFFIXES
-    lib${_lib_suffix}
-    lib
-    libs${_lib_suffix}
-    libs
-    bin${_lib_suffix}
-    bin
-    ../lib${_lib_suffix}
-    ../lib
-    ../libs${_lib_suffix}
-    ../libs
-    ../bin${_lib_suffix}
-    ../bin)
+  HINTS ${PC_CARLAUTILS_LIBRARY_DIRS}
+  PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
+  PATH_SUFFIXES carla)
 
 find_program(
   CARLAUTILS_DISCOVERY_NATIVE
   NAMES carla-discovery-native
-  HINTS ENV CARLAUTILS_PATH ${CARLAUTILS_PATH} ${CMAKE_SOURCE_DIR}/${CARLAUTILS_PATH} ${_CARLAUTILS_LIBRARY_DIRS}
-  PATHS /usr/lib/carla /usr/local/lib/carla /opt/local/lib/carla /sw/lib/carla
-  PATH_SUFFIXES
-    lib${_lib_suffix}
-    lib
-    libs${_lib_suffix}
-    libs
-    bin${_lib_suffix}
-    bin
-    ../lib${_lib_suffix}
-    ../lib
-    ../libs${_lib_suffix}
-    ../libs
-    ../bin${_lib_suffix}
-    ../bin)
+  HINTS ${PC_CARLAUTILS_LIBRARY_DIRS}
+  PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
+  PATH_SUFFIXES carla)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
