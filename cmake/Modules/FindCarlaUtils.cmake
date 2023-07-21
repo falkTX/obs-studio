@@ -27,20 +27,18 @@ find_library(
   HINTS ENV CARLAUTILS_PATH ${CARLAUTILS_PATH} ${CMAKE_SOURCE_DIR}/${CARLAUTILS_PATH} ${_CARLAUTILS_LIBRARY_DIRS}
   PATHS /usr/lib/carla /usr/local/lib/carla /opt/local/lib/carla /sw/lib/carla
   PATH_SUFFIXES
-    lib${_lib_suffix}/carla
-    lib/carla
-    libs${_lib_suffix}/carla
-    libs/carla
+    lib${_lib_suffix}
+    lib
+    libs${_lib_suffix}
+    libs
     bin${_lib_suffix}
     bin
-    ../lib${_lib_suffix}/carla
-    ../lib/carla
-    ../libs${_lib_suffix}/carla
-    ../libs/carla
+    ../lib${_lib_suffix}
+    ../lib
+    ../libs${_lib_suffix}
+    ../libs
     ../bin${_lib_suffix}
     ../bin)
-
-# $<$<PLATFORM_ID:Windows>:.exe>
 
 find_program(
   CARLAUTILS_BRIDGE_NATIVE
@@ -48,16 +46,16 @@ find_program(
   HINTS ENV CARLAUTILS_PATH ${CARLAUTILS_PATH} ${CMAKE_SOURCE_DIR}/${CARLAUTILS_PATH} ${_CARLAUTILS_LIBRARY_DIRS}
   PATHS /usr/lib/carla /usr/local/lib/carla /opt/local/lib/carla /sw/lib/carla
   PATH_SUFFIXES
-    lib${_lib_suffix}/carla
-    lib/carla
-    libs${_lib_suffix}/carla
-    libs/carla
+    lib${_lib_suffix}
+    lib
+    libs${_lib_suffix}
+    libs
     bin${_lib_suffix}
     bin
-    ../lib${_lib_suffix}/carla
-    ../lib/carla
-    ../libs${_lib_suffix}/carla
-    ../libs/carla
+    ../lib${_lib_suffix}
+    ../lib
+    ../libs${_lib_suffix}
+    ../libs
     ../bin${_lib_suffix}
     ../bin)
 
@@ -67,16 +65,16 @@ find_program(
   HINTS ENV CARLAUTILS_PATH ${CARLAUTILS_PATH} ${CMAKE_SOURCE_DIR}/${CARLAUTILS_PATH} ${_CARLAUTILS_LIBRARY_DIRS}
   PATHS /usr/lib/carla /usr/local/lib/carla /opt/local/lib/carla /sw/lib/carla
   PATH_SUFFIXES
-    lib${_lib_suffix}/carla
-    lib/carla
-    libs${_lib_suffix}/carla
-    libs/carla
+    lib${_lib_suffix}
+    lib
+    libs${_lib_suffix}
+    libs
     bin${_lib_suffix}
     bin
-    ../lib${_lib_suffix}/carla
-    ../lib/carla
-    ../libs${_lib_suffix}/carla
-    ../libs/carla
+    ../lib${_lib_suffix}
+    ../lib
+    ../libs${_lib_suffix}
+    ../libs
     ../bin${_lib_suffix}
     ../bin)
 
