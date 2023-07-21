@@ -43,21 +43,21 @@ find_library(
   CARLAUTILS_LIBRARY
   NAMES carla_utils libcarla_utils
   HINTS ${PC_CARLAUTILS_LIBRARY_DIRS}
-  PATHS /usr/lib/carla /usr/local/lib/carla
+  PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
   PATH_SUFFIXES carla)
 
 find_program(
   CARLAUTILS_BRIDGE_NATIVE
   NAMES carla-bridge-native
   HINTS ${PC_CARLAUTILS_LIBRARY_DIRS}
-  PATHS /usr/lib/carla /usr/local/lib/carla
+  PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
   PATH_SUFFIXES carla)
 
 find_program(
   CARLAUTILS_DISCOVERY_NATIVE
   NAMES carla-discovery-native
   HINTS ${PC_CARLAUTILS_LIBRARY_DIRS}
-  PATHS /usr/lib/carla /usr/local/lib/carla
+  PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
   PATH_SUFFIXES carla)
 
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin|Windows")
