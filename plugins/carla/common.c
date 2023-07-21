@@ -40,7 +40,7 @@ const char *get_carla_bin_path(void)
 	memcpy(mpath, utilspath, utilslen);
 	memcpy(mpath + utilslen, CARLA_OS_SEP_STR "carla-discovery-native", 24);
 #ifdef _WIN32
-	memcpy(mpath + utilslen + 24, ".exe", 5);
+	memcpy(mpath + utilslen + 23, ".exe", 5);
 #endif
 
 	if (os_file_exists(mpath)) {
