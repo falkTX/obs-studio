@@ -4,6 +4,7 @@
     "builddir": true,
     "subdir": "cmake",
     "config-opts": [
+        "-DCMAKE_BUILD_TYPE=Release",
         "-DCARLA_SKIP_LIBDIR_SUFFIX:BOOL=ON",
         "-DCARLA_USE_JACK:BOOL=OFF",
         "-DCARLA_USE_OSC:BOOL=OFF"
