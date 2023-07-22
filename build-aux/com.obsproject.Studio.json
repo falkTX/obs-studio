@@ -19,11 +19,11 @@
         "--talk-name=org.a11y.Bus",
         "--own-name=org.kde.StatusNotifierItem-2-2",
         "--system-talk-name=org.freedesktop.Avahi",
-        "--env=CLAP_PATH=$HOME/.clap:/app/extensions/Plugins/clap",
-        "--env=LADSPA_PATH=$HOME/.ladspa:/app/extensions/Plugins/ladspa",
-        "--env=LV2_PATH=$HOME/.lv2:/app/extensions/Plugins/lv2:/app/lib/lv2",
-        "--env=VST_PATH=$HOME/.vst:/app/extensions/Plugins/vst",
-        "--env=VST3_PATH=$HOME/.vst3:/app/extensions/Plugins/vst3"
+        "--env=CLAP_PATH=/app/extensions/Plugins/clap",
+        "--env=LADSPA_PATH=/app/extensions/Plugins/ladspa",
+        "--env=LV2_PATH=/app/extensions/Plugins/lv2:/app/lib/lv2",
+        "--env=VST_PATH=/app/extensions/Plugins/vst",
+        "--env=VST3_PATH=/app/extensions/Plugins/vst3"
     ],
     "add-extensions": {
         "com.obsproject.Studio.Plugin": {
