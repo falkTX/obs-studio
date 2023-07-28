@@ -7,20 +7,20 @@ if(PKG_CONFIG_FOUND)
   pkg_check_modules(PC_CarlaUtils QUIET carla-utils)
 endif()
 
-find_library(
-  CarlaUtils_LIBRARY
-  NAMES carla-utils carla_utils libcarla_utils
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
-  PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
-  PATH_SUFFIXES carla)
-
 find_path(
   CarlaUtils_INCLUDE_DIR
   NAMES CarlaBridgeUtils.hpp
-  HINTS ${PC_CarlaUtils_INCLUDE_DIRS} ${CarlaUtils_LIBRARY}
+  HINTS ${PC_CarlaUtils_INCLUDE_DIRS}
   PATHS /usr/include/carla /usr/local/include/carla
   PATH_SUFFIXES carla/utils utils Headers
   DOC "carla include directory")
+
+find_library(
+  CarlaUtils_LIBRARY
+  NAMES carla_utils libcarla_utils
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
+  PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
+  PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK2

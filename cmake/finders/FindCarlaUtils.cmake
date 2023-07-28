@@ -38,13 +38,24 @@ find_library(
   PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
   PATH_SUFFIXES carla)
 
-find_path(
-  CarlaUtils_INCLUDE_DIR
-  NAMES CarlaBridgeUtils.hpp
-  HINTS ${PC_CarlaUtils_INCLUDE_DIRS} ${CarlaUtils_LIBRARY}
-  PATHS /usr/include/carla /usr/local/include/carla
-  PATH_SUFFIXES carla/utils utils Headers
-  DOC "carla include directory")
+if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
+  # special case for finding include dir using macOS frameworks
+  find_path(
+    CarlaUtils_INCLUDE_DIR
+    NAMES CarlaBridgeUtils.hpp
+    HINTS ${CarlaUtils_LIBRARY}
+    PATHS /usr/include/carla /usr/local/include/carla
+    PATH_SUFFIXES Headers
+    DOC "carla include directory")
+else()
+  find_path(
+    CarlaUtils_INCLUDE_DIR
+    NAMES utils/CarlaBridgeUtils.hpp
+    HINTS ${PC_CarlaUtils_INCLUDE_DIRS}
+    PATHS /usr/include/carla /usr/local/include/carla
+    PATH_SUFFIXES carla
+    DOC "carla include directory")
+endif()
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK2
