@@ -38,12 +38,16 @@ find_library(
   PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
   PATH_SUFFIXES carla)
 
+message("testing carla lib dir1: $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>")
+message("testing carla lib dir2: $<TARGET_IMPORT_FILE_DIR:${CarlaUtils_LIBRARY}>")
+message("testing carla lib dir3: $<TARGET_LINKER_LIBRARY_FILE_DIR:${CarlaUtils_LIBRARY}>")
+
 find_path(
   CarlaUtils_INCLUDE_DIR
   NAMES utils/CarlaBridgeUtils.hpp
   HINTS ${PC_CarlaUtils_INCLUDE_DIRS} $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>
   PATHS /usr/include/carla /usr/local/include/carla
-  PATH_SUFFIXES carla
+  PATH_SUFFIXES carla Headers
   DOC "carla include directory")
 
 find_program(
