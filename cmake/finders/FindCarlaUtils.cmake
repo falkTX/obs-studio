@@ -42,8 +42,9 @@ message("includedir test1: ${CarlaUtils_LIBRARY}")
 message("includedir test2: $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>")
 
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
-  # special case for finding include dir using macOS frameworks
+  # special case using macOS frameworks, as otherwise cmake fails to find it
   set(CarlaUtils_INCLUDE_DIR ${CarlaUtils_LIBRARY}/Headers)
+  set(CarlaUtils_INCLUDE_DIR_FOUND TRUE)
 else()
   find_path(
     CarlaUtils_INCLUDE_DIR
