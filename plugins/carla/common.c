@@ -34,21 +34,9 @@ const char *get_carla_bin_path(void)
 	if (carla_bin_path != NULL)
 		return carla_bin_path;
 
-	char *binpath;
-	const char *utilspath;
-
-#if defined(__linux__) || defined(__FreeBSD__)
-	if (access("/.flatpak-info", F_OK) == 0) {
-		// use known path under flatpak
-		utilspath = "/app/bin";
-	} else
-#endif
-	{
-		// use path of linked carla-utils library
-		utilspath = carla_get_library_folder();
-	}
-
+	const char *const utilspath = carla_get_library_folder();
 	const size_t utilslen = strlen(utilspath);
+	char *binpath;
 
 	binpath = bmalloc(utilslen + 28);
 	memcpy(binpath, utilspath, utilslen);
