@@ -44,7 +44,6 @@ if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
     CarlaUtils_INCLUDE_DIR
     NAMES CarlaBridgeUtils.hpp
     HINTS ${CarlaUtils_LIBRARY}
-    PATHS /usr/include/carla /usr/local/include/carla
     PATH_SUFFIXES Headers
     DOC "carla include directory")
 else()
@@ -52,7 +51,7 @@ else()
     CarlaUtils_INCLUDE_DIR
     NAMES utils/CarlaBridgeUtils.hpp
     HINTS ${PC_CarlaUtils_INCLUDE_DIRS}
-    PATHS /usr/include/carla /usr/local/include/carla
+    PATHS /usr/include/carla /usr/local/include/carla /app/include/carla
     PATH_SUFFIXES carla
     DOC "carla include directory")
 endif()

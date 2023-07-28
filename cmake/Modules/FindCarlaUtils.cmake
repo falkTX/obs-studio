@@ -11,8 +11,8 @@ find_path(
   CarlaUtils_INCLUDE_DIR
   NAMES CarlaBridgeUtils.hpp
   HINTS ${PC_CarlaUtils_INCLUDE_DIRS}
-  PATHS /usr/include/carla /usr/local/include/carla
-  PATH_SUFFIXES carla/utils utils Headers
+  PATHS /usr/include/carla /usr/local/include/carla /app/include/carla
+  PATH_SUFFIXES carla
   DOC "carla include directory")
 
 find_library(
