@@ -44,15 +44,6 @@ target_sources(
           pluginrefreshdialog.hpp
           qtutils.cpp)
 
-# non-mac/win systems should use rpath. this is typically automatically handled by pkg-config, but OBS does not read the
-# link flags from there
-if(NOT (OS_MACOS OR OS_WINDOWS))
-  set_property(
-    TARGET carla-bridge
-    APPEND
-    PROPERTY BUILD_RPATH "$<TARGET_FILE_DIR:carla::utils>" INSTALL_RPATH "$<TARGET_FILE_DIR:carla::utils>")
-endif()
-
 if(OBS_CMAKE_VERSION VERSION_GREATER_EQUAL 3.0.0)
   set_target_properties_obs(
     carla-bridge

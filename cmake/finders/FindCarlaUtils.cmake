@@ -114,6 +114,10 @@ if(CarlaUtils_FOUND)
     endif()
 
     set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_INCLUDE_DIRS}")
+
+    if(${PC_CarlaUtils_FOUND})
+      set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS "${PC_CarlaUtils_LDFLAGS}")
+    endif()
   endif()
 
   if(NOT TARGET carla::bridge-lv2-gtk2)
