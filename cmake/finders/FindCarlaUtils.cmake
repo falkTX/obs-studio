@@ -38,12 +38,16 @@ find_library(
   PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
   PATH_SUFFIXES carla)
 
+message("includedir test1: ${CarlaUtils_LIBRARY}")
+message("includedir test2: $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>")
+
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
   # special case for finding include dir using macOS frameworks
   find_path(
     CarlaUtils_INCLUDE_DIR
     NAMES CarlaBridgeUtils.hpp
-    HINTS ${CarlaUtils_LIBRARY}/Headers
+    HINTS ${CarlaUtils_LIBRARY}
+    PATH_SUFFIXES Headers Versions/A/Headers
     DOC "carla include directory")
 else()
   find_path(
