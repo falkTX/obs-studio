@@ -47,6 +47,20 @@ find_path(
   DOC "carla include directory")
 
 find_program(
+  CarlaUtils_BRIDGE_LV2_GTK2
+  NAMES carla-bridge-lv2-gtk2
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
+  PATH_SUFFIXES carla)
+
+find_program(
+  CarlaUtils_BRIDGE_LV2_GTK3
+  NAMES carla-bridge-lv2-gtk3
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
+  PATH_SUFFIXES carla)
+
+find_program(
   CarlaUtils_BRIDGE_NATIVE
   NAMES carla-bridge-native
   HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
@@ -94,13 +108,13 @@ if(CarlaUtils_FOUND)
 
   if(NOT TARGET carla::bridge-lv2-gtk2)
     add_executable(carla::bridge-lv2-gtk2 IMPORTED GLOBAL)
-    set_target_properties(carla::bridge-lv2-gtk2 PROPERTIES IMPORTED_LOCATION "${CarlaUtils_BRIDGE_NATIVE}")
+    set_target_properties(carla::bridge-lv2-gtk2 PROPERTIES IMPORTED_LOCATION "${CarlaUtils_BRIDGE_LV2_GTK2}")
     add_dependencies(carla::utils carla::bridge-lv2-gtk2)
   endif()
 
   if(NOT TARGET carla::bridge-lv2-gtk3)
     add_executable(carla::bridge-lv2-gtk3 IMPORTED GLOBAL)
-    set_target_properties(carla::bridge-lv2-gtk3 PROPERTIES IMPORTED_LOCATION "${CarlaUtils_BRIDGE_NATIVE}")
+    set_target_properties(carla::bridge-lv2-gtk3 PROPERTIES IMPORTED_LOCATION "${CarlaUtils_BRIDGE_LV2_GTK3}")
     add_dependencies(carla::utils carla::bridge-lv2-gtk3)
   endif()
 
