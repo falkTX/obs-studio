@@ -43,8 +43,7 @@ if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
   find_path(
     CarlaUtils_INCLUDE_DIR
     NAMES CarlaBridgeUtils.hpp
-    HINTS ${CarlaUtils_LIBRARY}
-    PATH_SUFFIXES Headers
+    HINTS ${CarlaUtils_LIBRARY}/Headers
     DOC "carla include directory")
 else()
   find_path(
