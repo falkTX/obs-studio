@@ -40,10 +40,10 @@ find_library(
 
 find_path(
   CarlaUtils_INCLUDE_DIR
-  NAMES utils/CarlaBridgeUtils.hpp
+  NAMES CarlaBridgeUtils.hpp
   HINTS ${PC_CarlaUtils_INCLUDE_DIRS} ${CarlaUtils_LIBRARY}
   PATHS /usr/include/carla /usr/local/include/carla
-  PATH_SUFFIXES carla Headers
+  PATH_SUFFIXES carla/utils utils Headers
   DOC "carla include directory")
 
 find_program(
@@ -90,6 +90,18 @@ if(CarlaUtils_FOUND)
     endif()
 
     set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_INCLUDE_DIRS}")
+  endif()
+
+  if(NOT TARGET carla::bridge-lv2-gtk2)
+    add_executable(carla::bridge-lv2-gtk2 IMPORTED GLOBAL)
+    set_target_properties(carla::bridge-lv2-gtk2 PROPERTIES IMPORTED_LOCATION "${CarlaUtils_BRIDGE_NATIVE}")
+    add_dependencies(carla::utils carla::bridge-lv2-gtk2)
+  endif()
+
+  if(NOT TARGET carla::bridge-lv2-gtk3)
+    add_executable(carla::bridge-lv2-gtk3 IMPORTED GLOBAL)
+    set_target_properties(carla::bridge-lv2-gtk3 PROPERTIES IMPORTED_LOCATION "${CarlaUtils_BRIDGE_NATIVE}")
+    add_dependencies(carla::utils carla::bridge-lv2-gtk3)
   endif()
 
   if(NOT TARGET carla::bridge-native)
