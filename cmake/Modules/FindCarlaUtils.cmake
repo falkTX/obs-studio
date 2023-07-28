@@ -9,7 +9,7 @@ endif()
 
 find_path(
   CarlaUtils_INCLUDE_DIR
-  NAMES CarlaBridgeUtils.hpp
+  NAMES utils/CarlaBridgeUtils.hpp
   HINTS ${PC_CarlaUtils_INCLUDE_DIRS}
   PATHS /usr/include /usr/local/include
   PATH_SUFFIXES carla
