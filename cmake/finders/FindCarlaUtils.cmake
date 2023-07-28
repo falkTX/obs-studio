@@ -31,32 +31,32 @@ if(PKG_CONFIG_FOUND)
   pkg_check_modules(PC_CarlaUtils QUIET carla-utils)
 endif()
 
-find_path(
-  CarlaUtils_INCLUDE_DIR
-  NAMES utils/CarlaBridgeUtils.hpp
-  HINTS ${PC_CarlaUtils_INCLUDE_DIRS}
-  PATHS /usr/include/carla /usr/local/include/carla
-  PATH_SUFFIXES carla
-  DOC "carla include directory")
-
 find_library(
   CarlaUtils_LIBRARY
-  NAMES carla_utils libcarla_utils
+  NAMES carla-utils carla_utils libcarla_utils
   HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
   PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
   PATH_SUFFIXES carla)
 
+find_path(
+  CarlaUtils_INCLUDE_DIR
+  NAMES utils/CarlaBridgeUtils.hpp
+  HINTS ${PC_CarlaUtils_INCLUDE_DIRS} $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>
+  PATHS /usr/include/carla /usr/local/include/carla
+  PATH_SUFFIXES carla
+  DOC "carla include directory")
+
 find_program(
   CarlaUtils_BRIDGE_NATIVE
   NAMES carla-bridge-native
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>
   PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_DISCOVERY_NATIVE
   NAMES carla-discovery-native
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>
   PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
   PATH_SUFFIXES carla)
 
