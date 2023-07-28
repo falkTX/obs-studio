@@ -35,7 +35,7 @@ find_library(
   CarlaUtils_LIBRARY
   NAMES carla-utils carla_utils libcarla_utils
   HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
-  PATHS /usr/lib/carla /usr/local/lib/carla /app/lib/carla
+  PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 message("includedir test1: ${CarlaUtils_LIBRARY}")
@@ -43,18 +43,13 @@ message("includedir test2: $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>")
 
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
   # special case for finding include dir using macOS frameworks
-  find_path(
-    CarlaUtils_INCLUDE_DIR
-    NAMES CarlaBridgeUtils.hpp
-    HINTS ${CarlaUtils_LIBRARY}
-    PATH_SUFFIXES Headers Versions/A/Headers
-    DOC "carla include directory")
+  set(CarlaUtils_INCLUDE_DIR ${CarlaUtils_LIBRARY}/Headers)
 else()
   find_path(
     CarlaUtils_INCLUDE_DIR
     NAMES utils/CarlaBridgeUtils.hpp
     HINTS ${PC_CarlaUtils_INCLUDE_DIRS}
-    PATHS /usr/include/carla /usr/local/include/carla /app/include/carla
+    PATHS /usr/include /usr/local/include
     PATH_SUFFIXES carla
     DOC "carla include directory")
 endif()
@@ -63,28 +58,28 @@ find_program(
   CarlaUtils_BRIDGE_LV2_GTK2
   NAMES carla-bridge-lv2-gtk2
   HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
-  PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
+  PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK3
   NAMES carla-bridge-lv2-gtk3
   HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
-  PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
+  PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_NATIVE
   NAMES carla-bridge-native
   HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
-  PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
+  PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_DISCOVERY_NATIVE
   NAMES carla-discovery-native
   HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
-  PATHS /usr/lib/carla /usr/local/lib/carla /app/bin
+  PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin|Windows")
