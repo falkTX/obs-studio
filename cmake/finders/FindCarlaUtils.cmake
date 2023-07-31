@@ -38,7 +38,7 @@ find_library(
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
-if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
   # special case using macOS frameworks, as otherwise cmake fails to find it
   # set(CarlaUtils_INCLUDE_DIR ${CarlaUtils_LIBRARY}/Headers)
   # set(CarlaUtils_INCLUDE_DIR_FOUND TRUE)
