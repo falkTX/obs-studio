@@ -38,15 +38,24 @@ find_library(
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
-message("includedir test1: ${CarlaUtils_LIBRARY}")
-message("includedir test2: $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>")
-
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
   # special case using macOS frameworks, as otherwise cmake fails to find it
-  set(CarlaUtils_INCLUDE_DIR ${CarlaUtils_LIBRARY}/Headers)
-  set(CarlaUtils_INCLUDE_DIR_FOUND TRUE)
-  mark_as_advanced(CarlaUtils_INCLUDE_DIR)
-  mark_as_advanced(CarlaUtils_INCLUDE_DIR_FOUND)
+  # set(CarlaUtils_INCLUDE_DIR ${CarlaUtils_LIBRARY}/Headers)
+  # set(CarlaUtils_INCLUDE_DIR_FOUND TRUE)
+  # mark_as_advanced(CarlaUtils_INCLUDE_DIR)
+  # mark_as_advanced(CarlaUtils_INCLUDE_DIR_FOUND)
+
+  set(TEST3 $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>)
+  message("macOS test1: ${CarlaUtils_LIBRARY}")
+  message("macOS test2: ${TEST3}")
+
+  find_path(
+    CarlaUtils_INCLUDE_DIR
+    NAMES CarlaBackend.h
+    HINTS ${PC_CarlaUtils_INCLUDE_DIRS} ${CarlaUtils_LIBRARY} ${TEST3}
+    PATHS /usr/include /usr/local/include
+    PATH_SUFFIXES carla Headers headers
+    DOC "carla include directory")
 else()
   find_path(
     CarlaUtils_INCLUDE_DIR
