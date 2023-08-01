@@ -29,6 +29,11 @@ find_qt(COMPONENTS Core Widgets)
 add_library(carla-bridge MODULE)
 add_library(OBS::carla-bridge ALIAS carla-bridge)
 
+if(OS_MACOS)
+  # needed for using Qt as framework
+  target_compile_options(carla-bridge PRIVATE -Wno-quoted-include-in-framework-header)
+endif()
+
 target_compile_definitions(carla-bridge PRIVATE CARLA_MODULE_ID="carla-bridge" CARLA_MODULE_NAME="Audio Plugin"
                                                 CARLA_UTILS_USE_QT)
 
