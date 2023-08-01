@@ -31,6 +31,12 @@ if(PKG_CONFIG_FOUND)
   pkg_check_modules(PC_CarlaUtils QUIET carla-utils)
 endif()
 
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
+  set(CarlaUtils_USING_FRAMEWORK TRUE)
+else()
+  set(CarlaUtils_USING_FRAMEWORK FALSE)
+endif()
+
 find_library(
   CarlaUtils_LIBRARY
   NAMES carla-utils carla_utils libcarla_utils
@@ -38,23 +44,13 @@ find_library(
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-  # special case using macOS frameworks, as otherwise cmake fails to find it
-  # set(CarlaUtils_INCLUDE_DIR ${CarlaUtils_LIBRARY}/Headers)
-  # set(CarlaUtils_INCLUDE_DIR_FOUND TRUE)
-  # mark_as_advanced(CarlaUtils_INCLUDE_DIR)
-  # mark_as_advanced(CarlaUtils_INCLUDE_DIR_FOUND)
-
-  set(TEST3 $<TARGET_FILE_DIR:${CarlaUtils_LIBRARY}>)
-  message("macOS test1: ${CarlaUtils_LIBRARY}")
-  message("macOS test2: ${TEST3}")
-
+if(${CarlaUtils_USING_FRAMEWORK})
+  # special case for macOS framework, using a flat include dir
   find_path(
     CarlaUtils_INCLUDE_DIR
-    NAMES CarlaBackend.h
-    HINTS ${PC_CarlaUtils_INCLUDE_DIRS} ${CarlaUtils_LIBRARY} ${TEST3}
-    PATHS /usr/include /usr/local/include
-    PATH_SUFFIXES carla Headers headers
+    NAMES CarlaBridgeUtils.hpp
+    HINTS ${CarlaUtils_LIBRARY}
+    PATH_SUFFIXES Headers
     DOC "carla include directory")
 else()
   find_path(
@@ -110,8 +106,12 @@ mark_as_advanced(CarlaUtils_INCLUDE_DIR CarlaUtils_LIBRARY CarlaUtils_BRIDGE_NAT
 unset(CarlaUtils_ERROR_REASON)
 
 if(CarlaUtils_FOUND)
-  set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR} ${CarlaUtils_INCLUDE_DIR}/includes
-                              ${CarlaUtils_INCLUDE_DIR}/utils)
+  if(${CarlaUtils_USING_FRAMEWORK})
+    set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR})
+  else()
+    set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR} ${CarlaUtils_INCLUDE_DIR}/includes
+                                ${CarlaUtils_INCLUDE_DIR}/utils)
+  endif()
   set(CarlaUtils_LIBRARIES ${CarlaUtils_LIBRARY})
 
   if(NOT TARGET carla::utils)
@@ -154,6 +154,8 @@ if(CarlaUtils_FOUND)
     add_dependencies(carla::utils carla::discovery-native)
   endif()
 endif()
+
+unset(CarlaUtils_USING_FRAMEWORK)
 
 include(FeatureSummary)
 set_package_properties(
