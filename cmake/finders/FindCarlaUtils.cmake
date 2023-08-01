@@ -31,14 +31,13 @@ if(PKG_CONFIG_FOUND)
   pkg_check_modules(PC_CarlaUtils QUIET carla-utils)
 endif()
 
-# AND NOT ${PC_CarlaUtils_FOUND}
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND NOT $<BOOL:${PC_CarlaUtils_FOUND}>)
   set(CarlaUtils_USING_FRAMEWORK TRUE)
 else()
   set(CarlaUtils_USING_FRAMEWORK FALSE)
 endif()
 
-message("carla testing ${CarlaUtils_USING_FRAMEWORK} ${PC_CarlaUtils_FOUND}")
+message("carla testing2 ${CarlaUtils_USING_FRAMEWORK} $<BOOL:${PC_CarlaUtils_FOUND}> ${PC_CarlaUtils_FOUND}")
 
 find_library(
   CarlaUtils_LIBRARY
