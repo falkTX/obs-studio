@@ -49,6 +49,7 @@ if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
   find_library(CarlaUtils_LIBRARY NAMES carla-utils)
 
   # if(${CarlaUtils_LIBRARY})
+    execute_process(COMMAND find /Users/runner/work/obs-studio/obs-studio/.deps/obs-deps-2023-07-28-universal/lib/carla-utils.framework)
     message("DEBUG: using carla-utils.framework - ${CarlaUtils_LIBRARY}")
     add_library(carla::utils ALIAS $<LINK_LIBRARY:FRAMEWORK,${CarlaUtils_LIBRARY}>)
     set(CarlaUtils_FOUND TRUE)
