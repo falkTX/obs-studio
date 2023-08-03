@@ -70,15 +70,8 @@ if(CarlaUtils_FOUND)
       set_target_properties(carla::utils PROPERTIES IMPORTED_LIBNAME "${CarlaUtils_LIBRARIES}")
     endif()
 
-    # if(NOT CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin|Windows")
-    if($<BOOL:${PC_CarlaUtils_FOUND}>)
-      message("DEBUG: using carla-utils pkg-config ${PC_CarlaUtils_LDFLAGS}")
-      set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS ${PC_CarlaUtils_LDFLAGS})
-    else()
-      message("DEBUG: NOT using carla-utils pkg-config ${PC_CarlaUtils_LDFLAGS}")
-    endif()
-
     set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_INCLUDE_DIRS}")
+    set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS ${PC_CarlaUtils_LDFLAGS})
   endif()
 
   if(NOT TARGET carla::bridge-lv2-gtk2)
