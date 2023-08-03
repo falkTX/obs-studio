@@ -27,79 +27,57 @@ The following cache variables may also be set:
 include(FindPackageHandleStandardArgs)
 
 # if pkg-config file is found, let it handle everything for us
-find_package(PkgConfig) # QUIET
+find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
-  pkg_check_modules(PC_CarlaUtils IMPORTED_TARGET carla-utils) # QUIET
-
-  if(${PC_CarlaUtils_FOUND})
-    message("DEBUG: using carla-utils pkg-config")
-    add_library(carla::utils ALIAS PkgConfig::PC_CarlaUtils)
-    set(CarlaUtils_FOUND TRUE)
-    mark_as_advanced(CarlaUtils_FOUND)
-    return()
-  else()
-    message("DEBUG: NOT using carla-utils pkg-config")
-  endif()
-else()
-  message("DEBUG: NOT using pkg-config")
+  pkg_check_modules(PC_CarlaUtils QUIET carla-utils)
 endif()
 
 # if using macOS, let frameworks handle everything for us
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-  find_library(CarlaUtils_LIBRARY NAMES carla-utils)
-
-  # if(${CarlaUtils_LIBRARY})
-    message("DEBUG: using carla-utils.framework - ${CarlaUtils_LIBRARY}")
-    add_library(carla::utils INTERFACE IMPORTED GLOBAL)
-    set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_LIBRARIES $<LINK_LIBRARY:FRAMEWORK,${CarlaUtils_LIBRARY}>)
-    # set_target_properties(carla::utils PROPERTIES FRAMEWORK TRUE)
-    set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_LIBRARY}/Headers")
-    set(CarlaUtils_FOUND TRUE)
-    mark_as_advanced(CarlaUtils_FOUND)
-    return()
-  # else()
-    # message("DEBUG: NOT using carla-utils.framework - ${CarlaUtils_LIBRARY}")
-  # endif()
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND NOT $<BOOL:${PC_CarlaUtils_FOUND}>)
+  message("DEBUG: using carla-utils macos framework")
+  set(CarlaUtils_USE_MACOS_FRAMEWORK TRUE)
+else()
+  message("DEBUG: NOT using carla-utils macos framework")
+  set(CarlaUtils_USE_MACOS_FRAMEWORK FALSE)
 endif()
-
-find_path(
-  CarlaUtils_INCLUDE_DIR
-  NAMES utils/CarlaBridgeUtils.hpp
-  PATHS /usr/include /usr/local/include
-  PATH_SUFFIXES carla
-  DOC "carla include directory")
 
 find_library(
   CarlaUtils_LIBRARY
-  NAMES carla_utils libcarla_utils
+  NAMES carla-utils carla_utils libcarla_utils
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
+
+find_path(
+  CarlaUtils_INCLUDE_DIR
+  NAMES CarlaBridgeUtils.hpp utils/CarlaBridgeUtils.hpp
+  PATHS /usr/include /usr/local/include ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_INCLUDE_DIRS}
+  PATH_SUFFIXES carla Headers)
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK2
   NAMES carla-bridge-lv2-gtk2
-  HINTS ${CarlaUtils_LIBRARY}
+  HINTS ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_LIBRARY_DIRS}
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK3
   NAMES carla-bridge-lv2-gtk3
-  HINTS ${CarlaUtils_LIBRARY}
+  HINTS ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_LIBRARY_DIRS}
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_NATIVE
   NAMES carla-bridge-native
-  HINTS ${CarlaUtils_LIBRARY}
+  HINTS ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_LIBRARY_DIRS}
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_DISCOVERY_NATIVE
   NAMES carla-discovery-native
-  HINTS ${CarlaUtils_LIBRARY}
+  HINTS ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_LIBRARY_DIRS}
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
@@ -119,17 +97,32 @@ mark_as_advanced(CarlaUtils_INCLUDE_DIR CarlaUtils_LIBRARY CarlaUtils_BRIDGE_NAT
 unset(CarlaUtils_ERROR_REASON)
 
 if(CarlaUtils_FOUND)
-  set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR} ${CarlaUtils_INCLUDE_DIR}/includes
-                              ${CarlaUtils_INCLUDE_DIR}/utils)
+  if(${CarlaUtils_USE_MACOS_FRAMEWORK})
+    set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR})
+  else()
+    set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR} ${CarlaUtils_INCLUDE_DIR}/includes
+                                ${CarlaUtils_INCLUDE_DIR}/utils)
+  endif()
   set(CarlaUtils_LIBRARIES ${CarlaUtils_LIBRARY})
 
   if(NOT TARGET carla::utils)
-    if(IS_ABSOLUTE "${CarlaUtils_LIBRARIES}")
+    if(${CarlaUtils_USE_MACOS_FRAMEWORK})
+      add_library(carla::utils INTERFACE IMPORTED GLOBAL)
+      set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_LIBRARIES $<LINK_LIBRARY:FRAMEWORK,${CarlaUtils_LIBRARY}>)
+      # set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_LIBRARY}/Headers")
+    elseif(IS_ABSOLUTE "${CarlaUtils_LIBRARIES}")
       add_library(carla::utils UNKNOWN IMPORTED GLOBAL)
       set_target_properties(carla::utils PROPERTIES IMPORTED_LOCATION "${CarlaUtils_LIBRARIES}")
     else()
       add_library(carla::utils INTERFACE IMPORTED GLOBAL)
       set_target_properties(carla::utils PROPERTIES IMPORTED_LIBNAME "${CarlaUtils_LIBRARIES}")
+    endif()
+
+    if($<BOOL:${PC_CarlaUtils_FOUND}>)
+      message("DEBUG: using carla-utils pkg-config")
+      set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS ${PC_CarlaUtils_LDFLAGS})
+    else()
+      message("DEBUG: NOT using carla-utils pkg-config")
     endif()
 
     set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_INCLUDE_DIRS}")
@@ -159,6 +152,8 @@ if(CarlaUtils_FOUND)
     add_dependencies(carla::utils carla::discovery-native)
   endif()
 endif()
+
+unset(CarlaUtils_USE_MACOS_FRAMEWORK)
 
 include(FeatureSummary)
 set_package_properties(
