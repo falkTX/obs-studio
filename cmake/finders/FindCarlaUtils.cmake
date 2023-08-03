@@ -26,13 +26,11 @@ The following cache variables may also be set:
 
 include(FindPackageHandleStandardArgs)
 
-# if pkg-config file is found, let it handle everything for us
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
   pkg_check_modules(PC_CarlaUtils QUIET carla-utils)
 endif()
 
-# if using macOS, let frameworks handle everything for us
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND NOT $<BOOL:${PC_CarlaUtils_FOUND}>)
   message("DEBUG: using carla-utils macos framework")
   set(CarlaUtils_USE_MACOS_FRAMEWORK TRUE)
@@ -51,7 +49,8 @@ find_path(
   CarlaUtils_INCLUDE_DIR
   NAMES CarlaBridgeUtils.hpp utils/CarlaBridgeUtils.hpp
   PATHS /usr/include /usr/local/include ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_INCLUDE_DIRS}
-  PATH_SUFFIXES carla Headers)
+  PATH_SUFFIXES carla)
+# Headers
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK2
@@ -109,7 +108,6 @@ if(CarlaUtils_FOUND)
     if(${CarlaUtils_USE_MACOS_FRAMEWORK})
       add_library(carla::utils INTERFACE IMPORTED GLOBAL)
       set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_LIBRARIES $<LINK_LIBRARY:FRAMEWORK,${CarlaUtils_LIBRARY}>)
-      # set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_LIBRARY}/Headers")
     elseif(IS_ABSOLUTE "${CarlaUtils_LIBRARIES}")
       add_library(carla::utils UNKNOWN IMPORTED GLOBAL)
       set_target_properties(carla::utils PROPERTIES IMPORTED_LOCATION "${CarlaUtils_LIBRARIES}")
