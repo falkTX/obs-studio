@@ -11,43 +11,42 @@ find_path(
   CarlaUtils_INCLUDE_DIR
   NAMES utils/CarlaBridgeUtils.hpp
   HINTS ${PC_CarlaUtils_INCLUDE_DIRS}
-  PATHS /usr/include /usr/local/include
-  PATH_SUFFIXES carla
-  DOC "carla include directory")
+  PATHS /usr/include /usr/local/include /app/include
+  PATH_SUFFIXES carla)
 
 find_library(
   CarlaUtils_LIBRARY
   NAMES carla_utils libcarla_utils
   HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
-  PATHS /usr/lib /usr/local/lib
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK2
   NAMES carla-bridge-lv2-gtk2
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
-  PATHS /usr/lib /usr/local/lib
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK3
   NAMES carla-bridge-lv2-gtk3
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
-  PATHS /usr/lib /usr/local/lib
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_NATIVE
   NAMES carla-bridge-native
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
-  PATHS /usr/lib /usr/local/lib
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_DISCOVERY_NATIVE
   NAMES carla-discovery-native
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
-  PATHS /usr/lib /usr/local/lib
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 include(FindPackageHandleStandardArgs)
@@ -71,11 +70,14 @@ if(CarlaUtils_FOUND)
       set_target_properties(carla::utils PROPERTIES IMPORTED_LIBNAME "${CarlaUtils_LIBRARIES}")
     endif()
 
-    set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_INCLUDE_DIRS}")
-
-    if(${PC_CarlaUtils_FOUND})
-      set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS "${PC_CarlaUtils_LDFLAGS}")
+    if($<BOOL:${PC_CarlaUtils_FOUND}>)
+      message("DEBUG: using carla-utils pkg-config")
+      set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS ${PC_CarlaUtils_LDFLAGS})
+    else()
+      message("DEBUG: NOT using carla-utils pkg-config")
     endif()
+
+    set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_INCLUDE_DIRS}")
   endif()
 
   if(NOT TARGET carla::bridge-lv2-gtk2)

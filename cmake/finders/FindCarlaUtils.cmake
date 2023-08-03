@@ -42,42 +42,43 @@ endif()
 find_library(
   CarlaUtils_LIBRARY
   NAMES carla-utils carla_utils libcarla_utils
-  PATHS /usr/lib /usr/local/lib
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 find_path(
   CarlaUtils_INCLUDE_DIR
   NAMES CarlaBridgeUtils.hpp utils/CarlaBridgeUtils.hpp
-  PATHS /usr/include /usr/local/include ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_INCLUDE_DIRS}
-  PATH_SUFFIXES carla)
-# Headers
+  HINTS ${PC_CarlaUtils_INCLUDE_DIRS} ${CarlaUtils_LIBRARY}
+  PATHS /usr/include /usr/local/include /app/include
+  PATH_SUFFIXES carla Headers)
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK2
   NAMES carla-bridge-lv2-gtk2
-  HINTS ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_LIBRARY_DIRS}
-  PATHS /usr/lib /usr/local/lib
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK3
   NAMES carla-bridge-lv2-gtk3
-  HINTS ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_LIBRARY_DIRS}
-  PATHS /usr/lib /usr/local/lib
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_NATIVE
   NAMES carla-bridge-native
-  HINTS ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_LIBRARY_DIRS}
-  PATHS /usr/lib /usr/local/lib
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_DISCOVERY_NATIVE
   NAMES carla-discovery-native
-  HINTS ${CarlaUtils_LIBRARY} ${PC_CarlaUtils_LIBRARY_DIRS}
-  PATHS /usr/lib /usr/local/lib
+  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  PATHS /usr/lib /usr/local/lib /app/lib
   PATH_SUFFIXES carla)
 
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin|Windows")
