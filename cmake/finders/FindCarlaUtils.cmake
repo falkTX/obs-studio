@@ -26,69 +26,69 @@ The following cache variables may also be set:
 
 include(FindPackageHandleStandardArgs)
 
+# if pkg-config file is found, let it handle everything for us
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
-  pkg_check_modules(PC_CarlaUtils QUIET carla-utils)
+  pkg_check_modules(PC_CarlaUtils IMPORTED_TARGET QUIET carla-utils)
+
+  if(${PC_CarlaUtils_FOUND})
+    add_library(carla::utils ALIAS PkgConfig::PC_CarlaUtils)
+    set(CarlaUtils_FOUND TRUE)
+    mark_as_advanced(CarlaUtils_FOUND)
+    return()
+  endif()
 endif()
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND NOT $<BOOL:${PC_CarlaUtils_FOUND}>)
-  set(CarlaUtils_USING_FRAMEWORK TRUE)
-else()
-  set(CarlaUtils_USING_FRAMEWORK FALSE)
+# if using macOS, let frameworks handle everything for us
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+  find_library(CarlaUtils_LIBRARY NAMES carla-utils)
+
+  if(${CarlaUtils_LIBRARY_FOUND})
+    add_library(carla::utils ALIAS $<LINK_LIBRARY:FRAMEWORK,${CarlaUtils_LIBRARY}>)
+    set(CarlaUtils_FOUND TRUE)
+    mark_as_advanced(CarlaUtils_FOUND)
+    return()
+  endif()
 endif()
 
-message("carla testing2 ${CarlaUtils_USING_FRAMEWORK} $<BOOL:${PC_CarlaUtils_FOUND}> ${PC_CarlaUtils_FOUND}")
+find_path(
+  CarlaUtils_INCLUDE_DIR
+  NAMES utils/CarlaBridgeUtils.hpp
+  PATHS /usr/include /usr/local/include
+  PATH_SUFFIXES carla
+  DOC "carla include directory")
 
 find_library(
   CarlaUtils_LIBRARY
-  NAMES carla-utils carla_utils libcarla_utils
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS}
+  NAMES carla_utils libcarla_utils
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
-
-if(${CarlaUtils_USING_FRAMEWORK})
-  # special case for macOS framework, using a flat include dir
-  find_path(
-    CarlaUtils_INCLUDE_DIR
-    NAMES CarlaBridgeUtils.hpp
-    HINTS ${CarlaUtils_LIBRARY}
-    PATH_SUFFIXES Headers
-    DOC "carla include directory")
-else()
-  find_path(
-    CarlaUtils_INCLUDE_DIR
-    NAMES utils/CarlaBridgeUtils.hpp
-    HINTS ${PC_CarlaUtils_INCLUDE_DIRS}
-    PATHS /usr/include /usr/local/include
-    PATH_SUFFIXES carla
-    DOC "carla include directory")
-endif()
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK2
   NAMES carla-bridge-lv2-gtk2
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  HINTS ${CarlaUtils_LIBRARY}
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_LV2_GTK3
   NAMES carla-bridge-lv2-gtk3
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  HINTS ${CarlaUtils_LIBRARY}
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_BRIDGE_NATIVE
   NAMES carla-bridge-native
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  HINTS ${CarlaUtils_LIBRARY}
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
 find_program(
   CarlaUtils_DISCOVERY_NATIVE
   NAMES carla-discovery-native
-  HINTS ${PC_CarlaUtils_LIBRARY_DIRS} ${CarlaUtils_LIBRARY}
+  HINTS ${CarlaUtils_LIBRARY}
   PATHS /usr/lib /usr/local/lib
   PATH_SUFFIXES carla)
 
@@ -108,12 +108,8 @@ mark_as_advanced(CarlaUtils_INCLUDE_DIR CarlaUtils_LIBRARY CarlaUtils_BRIDGE_NAT
 unset(CarlaUtils_ERROR_REASON)
 
 if(CarlaUtils_FOUND)
-  if(${CarlaUtils_USING_FRAMEWORK})
-    set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR})
-  else()
-    set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR} ${CarlaUtils_INCLUDE_DIR}/includes
-                                ${CarlaUtils_INCLUDE_DIR}/utils)
-  endif()
+  set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR} ${CarlaUtils_INCLUDE_DIR}/includes
+                              ${CarlaUtils_INCLUDE_DIR}/utils)
   set(CarlaUtils_LIBRARIES ${CarlaUtils_LIBRARY})
 
   if(NOT TARGET carla::utils)
@@ -126,10 +122,6 @@ if(CarlaUtils_FOUND)
     endif()
 
     set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_INCLUDE_DIRS}")
-
-    if(${PC_CarlaUtils_FOUND})
-      set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS "${PC_CarlaUtils_LDFLAGS}")
-    endif()
   endif()
 
   if(NOT TARGET carla::bridge-lv2-gtk2)
@@ -156,8 +148,6 @@ if(CarlaUtils_FOUND)
     add_dependencies(carla::utils carla::discovery-native)
   endif()
 endif()
-
-unset(CarlaUtils_USING_FRAMEWORK)
 
 include(FeatureSummary)
 set_package_properties(
