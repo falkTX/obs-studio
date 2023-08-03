@@ -27,27 +27,35 @@ The following cache variables may also be set:
 include(FindPackageHandleStandardArgs)
 
 # if pkg-config file is found, let it handle everything for us
-find_package(PkgConfig QUIET)
+find_package(PkgConfig) # QUIET
 if(PKG_CONFIG_FOUND)
-  pkg_check_modules(PC_CarlaUtils IMPORTED_TARGET QUIET carla-utils)
+  pkg_check_modules(PC_CarlaUtils IMPORTED_TARGET carla-utils) # QUIET
 
   if(${PC_CarlaUtils_FOUND})
+    message("DEBUG: using carla-utils pkg-config")
     add_library(carla::utils ALIAS PkgConfig::PC_CarlaUtils)
     set(CarlaUtils_FOUND TRUE)
     mark_as_advanced(CarlaUtils_FOUND)
     return()
+  else()
+    message("DEBUG: NOT using carla-utils pkg-config")
   endif()
+else()
+  message("DEBUG: NOT using pkg-config")
 endif()
 
 # if using macOS, let frameworks handle everything for us
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
   find_library(CarlaUtils_LIBRARY NAMES carla-utils)
 
-  if(${CarlaUtils_LIBRARY_FOUND})
+  if(${CarlaUtils_LIBRARY})
+    message("DEBUG: using carla-utils.framework")
     add_library(carla::utils ALIAS $<LINK_LIBRARY:FRAMEWORK,${CarlaUtils_LIBRARY}>)
     set(CarlaUtils_FOUND TRUE)
     mark_as_advanced(CarlaUtils_FOUND)
     return()
+  else()
+    message("DEBUG: NOT using carla-utils.framework")
   endif()
 endif()
 
