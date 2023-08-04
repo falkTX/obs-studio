@@ -70,7 +70,7 @@ if(CarlaUtils_FOUND)
       set_target_properties(carla::utils PROPERTIES IMPORTED_LIBNAME "${CarlaUtils_LIBRARIES}")
     endif()
 
-    if(${PC_CarlaUtils_FOUND})
+    if(PC_CarlaUtils_FOUND)
       message("DEBUG: using carla-utils pkg-config | ${PC_CarlaUtils_FOUND} | ${PC_CarlaUtils_LDFLAGS}")
       set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS ${PC_CarlaUtils_LDFLAGS})
     else()
