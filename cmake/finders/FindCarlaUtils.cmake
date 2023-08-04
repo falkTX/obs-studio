@@ -31,11 +31,12 @@ if(PKG_CONFIG_FOUND)
   pkg_check_modules(PC_CarlaUtils QUIET carla-utils)
 endif()
 
-if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND NOT $<BOOL:${PC_CarlaUtils_FOUND}>)
-  message("DEBUG: using carla-utils macos framework")
+# $<BOOL:${PC_CarlaUtils_FOUND}>
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND NOT ${PC_CarlaUtils_FOUND})
+  message("DEBUG: using carla-utils macos framework | ${PC_CarlaUtils_FOUND} | ${PC_CarlaUtils_LDFLAGS}")
   set(CarlaUtils_USE_MACOS_FRAMEWORK TRUE)
 else()
-  message("DEBUG: NOT using carla-utils macos framework")
+  message("DEBUG: NOT using carla-utils macos framework | ${PC_CarlaUtils_FOUND} | ${PC_CarlaUtils_LDFLAGS}")
   set(CarlaUtils_USE_MACOS_FRAMEWORK FALSE)
 endif()
 
@@ -117,8 +118,14 @@ if(CarlaUtils_FOUND)
       set_target_properties(carla::utils PROPERTIES IMPORTED_LIBNAME "${CarlaUtils_LIBRARIES}")
     endif()
 
+    if(${PC_CarlaUtils_FOUND})
+      message("DEBUG: using carla-utils pkg-config | ${PC_CarlaUtils_FOUND} | ${PC_CarlaUtils_LDFLAGS}")
+      set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS ${PC_CarlaUtils_LDFLAGS})
+    else()
+      message("DEBUG: NOT using carla-utils pkg-config | ${PC_CarlaUtils_FOUND} | ${PC_CarlaUtils_LDFLAGS}")
+    endif()
+
     set_target_properties(carla::utils PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CarlaUtils_INCLUDE_DIRS}")
-    set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_OPTIONS ${PC_CarlaUtils_LDFLAGS})
   endif()
 
   if(NOT TARGET carla::bridge-lv2-gtk2)
