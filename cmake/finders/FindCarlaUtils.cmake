@@ -48,7 +48,7 @@ find_library(
 
 find_path(
   CarlaUtils_INCLUDE_DIR
-  NAMES CarlaBridgeUtils.hpp utils/CarlaBridgeUtils.hpp
+  NAMES utils/CarlaBridgeUtils.hpp
   HINTS ${PC_CarlaUtils_INCLUDE_DIRS} ${CarlaUtils_LIBRARY}
   PATHS /usr/include /usr/local/include /app/include
   PATH_SUFFIXES carla Headers)
@@ -97,12 +97,8 @@ mark_as_advanced(CarlaUtils_INCLUDE_DIR CarlaUtils_LIBRARY CarlaUtils_BRIDGE_NAT
 unset(CarlaUtils_ERROR_REASON)
 
 if(CarlaUtils_FOUND)
-  if(${CarlaUtils_USE_MACOS_FRAMEWORK})
-    set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR})
-  else()
-    set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR} ${CarlaUtils_INCLUDE_DIR}/includes
-                                ${CarlaUtils_INCLUDE_DIR}/utils)
-  endif()
+  set(CarlaUtils_INCLUDE_DIRS ${CarlaUtils_INCLUDE_DIR} ${CarlaUtils_INCLUDE_DIR}/includes
+                              ${CarlaUtils_INCLUDE_DIR}/utils)
   set(CarlaUtils_LIBRARIES ${CarlaUtils_LIBRARY})
 
   if(NOT TARGET carla::utils)
