@@ -91,9 +91,9 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   CarlaUtils
   FOUND_VAR CarlaUtils_FOUND
-  REQUIRED_VARS CarlaUtils_INCLUDE_DIR CarlaUtils_LIBRARY CarlaUtils_BRIDGE_NATIVE CarlaUtils_DISCOVERY_NATIVE
+  REQUIRED_VARS CarlaUtils_LIBRARY CarlaUtils_INCLUDE_DIR CarlaUtils_BRIDGE_NATIVE CarlaUtils_DISCOVERY_NATIVE
                 REASON_FAILURE_MESSAGE "${CarlaUtils_ERROR_REASON}")
-mark_as_advanced(CarlaUtils_INCLUDE_DIR CarlaUtils_LIBRARY CarlaUtils_BRIDGE_NATIVE CarlaUtils_DISCOVERY_NATIVE)
+mark_as_advanced(CarlaUtils_LIBRARY CarlaUtils_INCLUDE_DIR CarlaUtils_BRIDGE_NATIVE CarlaUtils_DISCOVERY_NATIVE)
 unset(CarlaUtils_ERROR_REASON)
 
 if(CarlaUtils_FOUND)
@@ -105,7 +105,7 @@ if(CarlaUtils_FOUND)
     if(${CarlaUtils_USE_MACOS_FRAMEWORK})
       add_library(carla::utils INTERFACE IMPORTED GLOBAL)
       set_target_properties(carla::utils PROPERTIES IMPORTED_LOCATION "${CarlaUtils_LIBRARIES}")
-      set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_LIBRARIES $<LINK_LIBRARY:FRAMEWORK,${CarlaUtils_LIBRARIES}>)
+      # set_target_properties(carla::utils PROPERTIES INTERFACE_LINK_LIBRARIES $<LINK_LIBRARY:FRAMEWORK,${CarlaUtils_LIBRARIES}>)
     elseif(IS_ABSOLUTE "${CarlaUtils_LIBRARIES}")
       add_library(carla::utils UNKNOWN IMPORTED GLOBAL)
       set_target_properties(carla::utils PROPERTIES IMPORTED_LOCATION "${CarlaUtils_LIBRARIES}")
