@@ -5,7 +5,6 @@
  */
 
 #include <CarlaBackendUtils.hpp>
-#include <CarlaString.hpp>
 #include <CarlaUtils.h>
 
 #include <QtCore/QDir>
@@ -55,7 +54,7 @@ struct PluginPaths {
 
 	PluginPaths()
 	{
-		// get common env vars
+		// get common env vars first
 		const QString HOME = QDir::toNativeSeparators(QDir::homePath());
 
 #if defined(Q_OS_WINDOWS)
@@ -66,7 +65,7 @@ struct PluginPaths {
 		const char *const envCOMMONPROGRAMFILES =
 			std::getenv("COMMONPROGRAMFILES");
 
-		// Small integrity tests
+		// small integrity tests
 		if (envAPPDATA == nullptr) {
 			qFatal("APPDATA variable not set, cannot continue");
 			abort();
@@ -91,11 +90,11 @@ struct PluginPaths {
 			"XDG_CONFIG_HOME", (HOME + "/.config").toUtf8()));
 #endif
 
-		// now set paths, listing format path spec if available
+		// now we set paths, listing format path spec if available
 		if (const char *const envLADSPA = std::getenv("LADSPA_PATH")) {
 			ladspa = envLADSPA;
 		} else {
-			// no official spec, use common paths
+			// no official spec for LADSPA, use most common paths
 #if defined(Q_OS_WINDOWS)
 			ladspa = APPDATA + "\\LADSPA";
 			ladspa += ";" + PROGRAMFILES + "\\LADSPA";
@@ -112,6 +111,7 @@ struct PluginPaths {
 		if (const char *const envLV2 = std::getenv("LV2_PATH")) {
 			lv2 = envLV2;
 		} else {
+			// use path spec as defined in:
 			// https://lv2plug.in/pages/filesystem-hierarchy-standard.html
 #if defined(Q_OS_WINDOWS)
 			lv2 = APPDATA + "\\LV2";
@@ -130,17 +130,19 @@ struct PluginPaths {
 			vst2 = envVST2;
 		} else {
 #if defined(Q_OS_WINDOWS)
+			// use path spec as defined in:
 			// https://helpcenter.steinberg.de/hc/en-us/articles/115000177084
 			vst2 = PROGRAMFILES + "\\VSTPlugins";
 			vst2 += ";" + PROGRAMFILES + "\\Steinberg\\VSTPlugins";
 			vst2 += ";" + COMMONPROGRAMFILES + "\\VST2";
 			vst2 += ";" + COMMONPROGRAMFILES + "\\Steinberg\\VST2";
 #elif defined(Q_OS_DARWIN)
+			// use path spec as defined in:
 			// https://helpcenter.steinberg.de/hc/en-us/articles/115000171310
 			vst2 = HOME + "/Library/Audio/Plug-Ins/VST";
 			vst2 += ":/Library/Audio/Plug-Ins/VST";
 #else
-			// no official spec, use common paths
+			// no official spec for VST2 on non-win/mac, use most common paths
 			vst2 = HOME + "/.vst";
 			vst2 += ":" + HOME + "/.lxvst";
 			vst2 += ":/usr/local/lib/vst";
@@ -153,6 +155,7 @@ struct PluginPaths {
 		if (const char *const envVST3 = std::getenv("VST3_PATH")) {
 			vst3 = envVST3;
 		} else {
+			// use path spec as defined in:
 			// https://steinbergmedia.github.io/vst3_dev_portal/pages/Technical+Documentation/Locations+Format/Plugin+Locations.html
 #if defined(Q_OS_WINDOWS)
 			vst3 = LOCALAPPDATA + "\\Programs\\Common\\VST3";
@@ -170,6 +173,7 @@ struct PluginPaths {
 		if (const char *const envCLAP = std::getenv("CLAP_PATH")) {
 			clap = envCLAP;
 		} else {
+			// use path spec as defined in:
 			// https://github.com/free-audio/clap/blob/main/include/clap/entry.h
 #if defined(Q_OS_WINDOWS)
 			clap = LOCALAPPDATA + "\\Programs\\Common\\CLAP";
@@ -187,7 +191,7 @@ struct PluginPaths {
 		if (const char *const envJSFX = std::getenv("JSFX_PATH")) {
 			jsfx = envJSFX;
 		} else {
-			// REAPER user data directory
+			// there is no path spec, use REAPER's user data directory
 #if defined(Q_OS_WINDOWS)
 			jsfx = APPDATA + "\\REAPER\\Effects";
 #elif defined(Q_OS_DARWIN)
@@ -201,7 +205,7 @@ struct PluginPaths {
 };
 
 // ----------------------------------------------------------------------------
-// Qt-compatible plugin info
+// Qt-compatible plugin info (convert to and from QVariant)
 
 // base details, nicely packed and POD-only so we can directly use as binary
 struct PluginInfoHeader {
@@ -392,7 +396,7 @@ static PluginInfo asPluginInfo(const CarlaCachedPluginInfo *const desc,
 #endif
 
 // ----------------------------------------------------------------------------
-// Qt-compatible plugin favorite
+// Qt-compatible plugin favorite (convert to and from QVariant)
 
 // base details, nicely packed and POD-only so we can directly use as binary
 struct PluginFavoriteHeader {
@@ -734,7 +738,7 @@ PluginListDialog::PluginListDialog(QWidget *const parent)
 			 &PluginListDialog::checkFiltersCategorySpecific);
 
 	QObject::connect(ui.act_focus_search, &QAction::triggered, this,
-			 &PluginListDialog::focusSearchFieldAndSelectAll);
+			 &PluginListDialog::focusSearchFieldAndSelectAllText);
 }
 
 PluginListDialog::~PluginListDialog()
@@ -860,7 +864,7 @@ void PluginListDialog::done(const int r)
 
 void PluginListDialog::showEvent(QShowEvent *const event)
 {
-	focusSearchFieldAndSelectAll();
+	focusSearchFieldAndSelectAllText();
 	QDialog::showEvent(event);
 
 	// Set up initial discovery
@@ -965,8 +969,9 @@ void PluginListDialog::timerEvent(QTimerEvent *const event)
 #ifdef CARLA_2_6_FEATURES
 			p->discovery.handle = carla_plugin_discovery_start(
 				p->discovery.tool.toUtf8().constData(),
-				p->discovery.ptype, path.toUtf8().constData(),
-				discoveryCallback, checkCacheCallback, this);
+				BINARY_NATIVE, p->discovery.ptype,
+				path.toUtf8().constData(), discoveryCallback,
+				checkCacheCallback, this);
 #else
 			if (const uint count = carla_get_cached_plugin_count(
 				    p->discovery.ptype,
@@ -1240,7 +1245,7 @@ void PluginListDialog::cellDoubleClicked(int, const int column)
 		done(QDialog::Accepted);
 }
 
-void PluginListDialog::focusSearchFieldAndSelectAll()
+void PluginListDialog::focusSearchFieldAndSelectAllText()
 {
 	ui.lineEdit->setFocus();
 	ui.lineEdit->selectAll();
@@ -1639,8 +1644,8 @@ const PluginListDialogResults *carla_exec_plugin_list_dialog()
 
 	if (gui->exec()) {
 		static PluginListDialogResults ret;
-		static CarlaString filename;
-		static CarlaString label;
+		static std::string filename;
+		static std::string label;
 
 		const PluginInfo &plugin(gui->getSelectedPluginInfo());
 
@@ -1649,8 +1654,8 @@ const PluginListDialogResults *carla_exec_plugin_list_dialog()
 
 		ret.build = plugin.build;
 		ret.type = plugin.type;
-		ret.filename = filename;
-		ret.label = label;
+		ret.filename = filename.c_str();
+		ret.label = label.c_str();
 		ret.uniqueId = plugin.uniqueId;
 
 		return &ret;

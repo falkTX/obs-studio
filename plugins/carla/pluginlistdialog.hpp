@@ -75,7 +75,7 @@ private:
 private Q_SLOTS:
 	void cellClicked(int row, int column);
 	void cellDoubleClicked(int row, int column);
-	void focusSearchFieldAndSelectAll();
+	void focusSearchFieldAndSelectAllText();
 	void checkFilters();
 	void checkFiltersCategoryAll(bool clicked);
 	void checkFiltersCategorySpecific(bool clicked);

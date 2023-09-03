@@ -778,11 +778,9 @@ void carla_bridge::process(float *buffers[MAX_AV_PLANES], const uint32_t frames)
 		carla_copyFloats(audiopool.data + (c * bufferSize), buffers[c],
 				 frames);
 
-	{
-		rtClientCtrl.writeOpcode(kPluginBridgeRtClientProcess);
-		rtClientCtrl.writeUInt(frames);
-		rtClientCtrl.commitWrite();
-	}
+	rtClientCtrl.writeOpcode(kPluginBridgeRtClientProcess);
+	rtClientCtrl.writeUInt(frames);
+	rtClientCtrl.commitWrite();
 
 	if (wait("process", 1000)) {
 		for (uint32_t c = 0; c < MAX_AV_PLANES; ++c)
@@ -972,6 +970,7 @@ void carla_bridge::save_and_wait()
 		// deactivate plugin if we timeout during save
 		if (timedOut && activated) {
 			activated = false;
+
 			const CarlaMutexLocker cml(nonRtClientCtrl.mutex);
 
 			nonRtClientCtrl.writeOpcode(
