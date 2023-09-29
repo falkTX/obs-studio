@@ -12,15 +12,15 @@
             }
         },
         "qt6": {
-            "version": "2023-09-18",
-            "baseUrl": "https://github.com/obsproject/obs-deps/releases/download",
+            "version": "2023-09-28",
+            "baseUrl": "https://github.com/falkTX/obs-deps/releases/download",
             "label": "Pre-Built Qt6",
             "hashes": {
-                "macos-universal": "223c112c085e0da3baf257ed3a0a7334b222b0fb411cd686d65eba9ebd3d74f4",
-                "windows-x64": "d57688e751dd6c3a839ee2ed962a6b78e3e162ecd1d2ab350c324a61964cc8ef"
+                "macos-universal": "a5762f7ee377858907b9106fa26be095a9bbd0a51c4eacb940827420ae1683a0",
+                "windows-x64": "7fbe00b068b72f61c58d6291352f6cf37353dd09e4d2cc19efef1a48233dfc1b"
             },
             "debugSymbols": {
-                "windows-x64": "08ada0228d53d5f90e5032fd37c4b7d518e9243158e71ebfb1df7bcab6eb30c3"
+                "windows-x64": "5011605a96411629f6e489d2f42d1a30099628d8a92775ef0cf4644f3b92a4b0"
             }
         },
         "cef": {
